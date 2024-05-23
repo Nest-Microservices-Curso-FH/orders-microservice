@@ -12,7 +12,7 @@ const envsSchema = joi
   .object({
     PORT: joi.number().required(),
     PRODUCTS_MICROSERVICE_HOST: joi.string().required(),
-    PRODUCTS_MICROSERVICE_PORT: joi.number().required()
+    PRODUCTS_MICROSERVICE_PORT: joi.number().required(),
     // DATABASE_URL: joi.string().required(),
   })
   .unknown(true);
@@ -28,6 +28,6 @@ const envVars: EnvVars = value;
 export const envs = {
   port: envVars.PORT,
   productsMicroServiceHost: envVars.PRODUCTS_MICROSERVICE_HOST,
-  productsMicroservicePort: envVars.PRODUCTS_MICROSERVICE_PORT
+  productsMicroservicePort: envVars.PRODUCTS_MICROSERVICE_PORT,
   // databaseUrl: envVars.DATABASE_URL,
 };

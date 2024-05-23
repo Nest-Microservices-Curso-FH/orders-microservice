@@ -15,10 +15,10 @@ import { envs } from 'src/config';
         transport: Transport.TCP,
         options: {
           host: envs.productsMicroServiceHost,
-          port: envs.productsMicroservicePort
-        }
-      }
-    ])
-  ]
+          port: envs.productsMicroservicePort,
+        },
+      },
+    ]),
+  ],
 })
-  export class OrdersModule {}
+export class OrdersModule {}

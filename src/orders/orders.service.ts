@@ -31,12 +31,45 @@ export class OrdersService extends PrismaClient implements OnModuleInit {
   }
 
   async create(createOrderDto: CreateOrderDto) {
-    const ids = [5,6];
+    try {
+      // 1 Confirmar los ids de los productos
+      const productIds = createOrderDto.items.map((item) => item.productId);
+      const products = await firstValueFrom(
+        this.productsClient.send({ cmd: 'validate_products' }, productIds),
+      );
 
-    const products = await firstValueFrom(
-    this.productsClient.send({ cmd: 'validate_products' }, ids)
-    )
-    return products;
+      // 2 Cálculos de los valores
+      const totalAmount = createOrderDto.items.reduce((acc, orderItem) => {
+        const price = products.find(
+          (product) => product.id === orderItem.productId,
+        ).price;
+        return price * orderItem.quantity;
+      }, 0);
+
+      const totalItems = createOrderDto.items.reduce((acc, orderItem) => {
+        return acc + orderItem.quantity;
+      }, 0);
+
+      // 3. Crear una transacción de base de datos
+      const order = await this.order.create({
+        data: {
+          totalAmount: totalAmount,
+          totalItems: totalItems,
+          OrderItem: {
+            createMany: {
+              data: [],
+            },
+          },
+        },
+      });
+
+      return order;
+    } catch (error) {
+      throw new RpcException({
+        status: HttpStatus.BAD_REQUEST,
+        message: 'Check logs',
+      });
+    }
   }
 
   async findAll(orderPaginationDto: OrderPaginationDto) {
