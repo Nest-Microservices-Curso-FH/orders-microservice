@@ -57,13 +57,15 @@ export class OrdersService extends PrismaClient implements OnModuleInit {
           totalItems: totalItems,
           OrderItem: {
             createMany: {
-              data: createOrderDto.items.map(orderItem => ({
-                price: products.find(product => product.id === orderItem.productId).price,
+              data: createOrderDto.items.map((orderItem) => ({
+                price: products.find(
+                  (product) => product.id === orderItem.productId,
+                ).price,
                 productId: orderItem.productId,
-                quantity: orderItem.quantity
-              }))
-            }
-          }
+                quantity: orderItem.quantity,
+              })),
+            },
+          },
         },
         include: {
           // OrderItem: true,
@@ -72,22 +74,22 @@ export class OrdersService extends PrismaClient implements OnModuleInit {
             select: {
               price: true,
               quantity: true,
-              productId: true
-            }
-          }
-        }
+              productId: true,
+            },
+          },
+        },
       });
 
       // return order;
       // queremos devolver también el product name:
       return {
         ...order,
-        OrderItem: order.OrderItem.map(orderItem => ({
+        OrderItem: order.OrderItem.map((orderItem) => ({
           ...orderItem,
-          name: products.find(product => product.id === orderItem.productId).name
-        }))
-      }
-
+          name: products.find((product) => product.id === orderItem.productId)
+            .name,
+        })),
+      };
     } catch (error) {
       throw new RpcException({
         status: HttpStatus.BAD_REQUEST,
@@ -125,6 +127,17 @@ export class OrdersService extends PrismaClient implements OnModuleInit {
   async findOne(id: string) {
     const order = await this.order.findFirst({
       where: { id },
+      include: {
+        // OrderItem: true,
+        // Solo campos seleccionados:
+        OrderItem: {
+          select: {
+            price: true,
+            quantity: true,
+            productId: true,
+          },
+        },
+      },
     });
 
     if (!order) {
@@ -134,7 +147,27 @@ export class OrdersService extends PrismaClient implements OnModuleInit {
       });
     }
 
-    return order;
+    try {
+      // 1 Confirmar los ids de los productos
+      const productIds = order.OrderItem.map((item) => item.productId);
+      const products = await firstValueFrom(
+        this.productsClient.send({ cmd: 'validate_products' }, productIds),
+      );
+
+      return {
+        ...order,
+        OrderItem: order.OrderItem.map((orderItem) => ({
+          ...orderItem,
+          name: products.find((product) => product.id === orderItem.productId)
+            .name,
+        })),
+      };
+    } catch (error) {
+      throw new RpcException({
+        status: HttpStatus.BAD_REQUEST,
+        message: 'Check logs',
+      });
+    }
   }
 
   async changeStatus(changeOrderStatus: ChangeOrderStatusDto) {
