@@ -20,12 +20,13 @@ COPY --from=deps /usr/src/app/node_modules ./node_modules
 # Copiar código fuente de la aplicación
 COPY . .
 
+RUN npx prisma migrate deploy
+RUN npx prisma generate
 # RUN npm run test
 RUN npm run build
 
 # Deja solo las dependencias necesarias para correr la aplicación
 RUN npm ci -f --only=production && npm cache clean --force
-RUN npx prisma generate
 
 
 # Crear la imagen final de Docker
