@@ -1,21 +1,29 @@
 steps:
-  - name: "gcr.io/cloud-builders/docker"
-    args:
-      - -c
-      - |
-        docker build -t europe-southwest1-docker.pkg.dev/fh-nest-microservices/image-registtry/orders-microservice -f dockerfile.prod --platform=linux/amd64 --build-arg ORDERS_DATABASE_URL=$$DATABASE_URL .
-    secretEnv: ['DATABASE_URL']
-  
-  - name: "gcr.io/cloud-builders/docker"
-    args:
-      [
-        "push",
-        "europe-southwest1-docker.pkg.dev/fh-nest-microservices/image-registtry/orders-microservice",
-      ]
+- name: 'gcr.io/cloud-builders/docker'
+  args:
+    [
+      "build",
+      "-t",
+      "europe-southwest1-docker.pkg.dev/fh-nest-microservices/image-registtry/orders-microservice",
+      "-f",
+      "dockerfile.prod",
+      "--platform=linux/amd64",
+      "--build-arg",
+      "ORDERS_DATABASE_URL=$$DATABASE_URL",
+      ".",
+    ]
+  secretEnv: ['DATABASE_URL']
+
+- name: 'gcr.io/cloud-builders/docker'
+  args:
+    [
+      "push",
+      "europe-southwest1-docker.pkg.dev/fh-nest-microservices/image-registtry/orders-microservice",
+    ]
 
 availableSecrets:
   secretManager:
-  - versionName: projects/856186106369/secrets/orders_database_url/versions/1
+  - versionName: projects/367390259998/secrets/orders_database_url/versions/1
     env: 'DATABASE_URL'
 options:
   logging: CLOUD_LOGGING_ONLY
