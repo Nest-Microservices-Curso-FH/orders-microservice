@@ -8,8 +8,8 @@ steps:
         "-f",
         "dockerfile.prod",
         "--platform=linux/amd64",
-        "--build-arg"
-        "orders_database_url=$$DATABASE_URL"
+        "--build-arg",
+        "orders_database_url=$$DATABASE_URL",
         ".",
       ]
   - name: "gcr.io/cloud-builders/docker"
