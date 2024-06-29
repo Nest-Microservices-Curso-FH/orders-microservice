@@ -10,8 +10,7 @@ steps:
         -f dockerfile.prod \
         --platform=linux/amd64 \
         --build-arg ORDERS_DATABASE_URL=$DATABASE_URL \
-        .
-
+       .
   secretEnv: ['DATABASE_URL']
 
 - name: 'gcr.io/cloud-builders/docker'
@@ -25,5 +24,6 @@ availableSecrets:
   secretManager:
   - versionName: projects/856186106369/secrets/orders_database_url/versions/1
     env: 'DATABASE_URL'
+
 options:
   logging: CLOUD_LOGGING_ONLY
