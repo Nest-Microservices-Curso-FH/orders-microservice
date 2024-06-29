@@ -9,7 +9,7 @@ steps:
         -t europe-southwest1-docker.pkg.dev/fh-nest-microservices/image-registtry/orders-microservice \
         -f dockerfile.prod \
         --platform=linux/amd64 \
-        --build-arg ORDERS_DATABASE_URL=$DATABASE_URL \
+        --build-arg ORDERS_DATABASE_URL=$$DATABASE_URL \
        .
   secretEnv: ['DATABASE_URL']
 
