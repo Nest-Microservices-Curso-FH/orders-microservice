@@ -4,7 +4,7 @@ steps:
   args:
     - '-c'
     - |
-      echo $DATABASE_URL
+      echo $$DATABASE_URL
       docker build \
         -t europe-southwest1-docker.pkg.dev/fh-nest-microservices/image-registtry/orders-microservice \
         -f dockerfile.prod \
